@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const { viewRolesQuery, viewEmployeesQuery } = require('./queries/viewQueries');
 
 const db = mysql.createConnection(
     {
@@ -26,18 +27,39 @@ const startPrompt = function() {
             type: 'list',
             name: 'action',
             message: 'What would you like to do?',
-            choices: ['View Departments', 'View Roles', 'View Employees', 'Exit']
+            choices: [
+                      'View All Departments',
+                      'View All Roles',
+                      'View All Employees',
+                      'Add A Department',
+                      'Add A Role',
+                      'Add An Employee',
+                      'Update An Employee',
+                      'Exit'
+                    ]
         })
         .then((answer) => {
             switch (answer.action) {
-                case 'View Departments':
+                case 'View All Departments':
                     viewDepartments();
                     break;
-                case 'View Roles':
+                case 'View All Roles':
                     viewRoles();
                     break;
-                case 'View Employees':
+                case 'View All Employees':
                     viewEmployees();
+                    break;
+                case 'Add A Department':
+                    addDepartment();
+                    break;
+                case 'Add A Role':
+                    addRole();
+                    break;
+                case 'Add An Employee':
+                    addEmployee();
+                    break;
+                case 'Update An Employee':
+                    updateEmployee();
                     break;
                 case 'Exit':
                     console.log('Exiting...');
@@ -60,4 +82,28 @@ const viewDepartments = function() {
         
         startPrompt();
     })
-}
+};
+
+const viewRoles = function() {
+    db.query(viewRolesQuery, (err, results) => {
+        if (err) {
+            console.error('Error querying roles: ', err);
+            return;
+        }
+        console.table(results);
+
+        startPrompt();
+    })
+};
+
+const viewEmployees = function() {
+    db.query(viewEmployeesQuery, (err, results) => {
+        if (err) {
+            console.error('Error querying employees: ', err);
+            return;
+        }
+        console.table(results);
+
+        startPrompt();
+    })
+};
