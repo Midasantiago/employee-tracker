@@ -70,7 +70,7 @@ const startPrompt = function () {
                     break;
             }
         });
-}
+};
 
 const viewDepartments = function () {
     db.query('SELECT * FROM department', (err, results) => {
@@ -214,3 +214,36 @@ const addEmployee = function() {
             }
         });
 };
+
+const updateEmployee = function() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'selectedEmployee',
+                message: 'Enter an employee to update:'
+            },
+            {
+                type: 'input',
+                name: 'updatedRole',
+                message: 'Enter the new role for employee:'
+            }
+        ])
+        .then((answer) => {
+            const selectedEmployee = answer.selectedEmployee.trim();
+            const updatedRole = answer.updatedRole.trim();
+            if (selectedEmployee && updatedRole) {
+                db.query('UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole, selectedEmployee], (err, result) => {
+                    if (err) {
+                        console.error('Error updating employee: ', err);
+                    } else {
+                        console.log(`Employee with ID '${selectedEmployee}' updated to role with ID '${updatedRole}'!.`);
+                    }
+                    startPrompt();
+                });
+            } else {
+                console.log('Please provide valid employee and role values.');
+            }
+        });
+};
+
